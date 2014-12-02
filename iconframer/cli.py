@@ -4,14 +4,14 @@
 iconframer - a command-line tool to generate SVG icons from templates
 
 Usage:
-  iconframer [--config=<file>] [-p --png] [--size=<size>]
+  iconframer [--config=<file>] [(--png --size=<size>)]
   iconframer -h | --help
   iconframer --version
 
 
 Options:
   -p --png            Generate PNG bitmaps
-  --size=<size>       Specify the diameter of the frame
+  --size=<size>       Specify the diameter of the frame for PNG [default: 24]
   --config=<file>     Override config file [default: iconframer.yaml]
   -h --help           Show this screen.
   -v --version        Show version.
@@ -87,7 +87,7 @@ def iconframer():
                out.write(svgstr)
                if args["--png"]:
                   pngfilepath = outdir + os.sep + entry.msgid + "-fi.png"
-                  generate_png(svgstr, args["<size>"], pngfilepath)
+                  generate_png(svgstr, int(args["--size"]), pngfilepath)
                print "Generated '%s'" % _(entry.msgid)
    
 

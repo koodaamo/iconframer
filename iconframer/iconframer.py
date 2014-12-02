@@ -66,6 +66,8 @@ def generate_png(svgstr, size, pngfilepath):
    img =  cairo.ImageSurface(cairo.FORMAT_ARGB32, size, size)
    ctx = cairo.Context(img)
    handler= rsvg.Handle(None, svgstr)
+   iw,ih, fw,fh =  handler.get_dimension_data()
+   ctx.translate(0,0)
+   ctx.scale(size/fw, size/fh) # assumes bigger source SVG template
    handler.render_cairo(ctx)
-   ctx.scale(200.0/size, 200.0/size)
    img.write_to_png(pngfilepath)
