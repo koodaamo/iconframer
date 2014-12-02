@@ -14,10 +14,10 @@ Iconframer
 
 Generate SVG icons
 
-* Free software: BSD license
-* Documentation: https://iconframer.readthedocs.org.
+* Free software: GNU Affero license
 
 Features
 --------
 
-* TODO
+* Frame SVG icons using a template and apply a label
+* Optionally, convert to PNG (requires pycairo/cairocffi & python-rsvg)

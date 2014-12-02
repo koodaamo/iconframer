@@ -4,12 +4,14 @@
 iconframer - a command-line tool to generate SVG icons from templates
 
 Usage:
-  iconframer [--config=<file>]
+  iconframer [--config=<file>] [-p --png] [--size=<size>]
   iconframer -h | --help
   iconframer --version
 
 
 Options:
+  -p --png            Generate PNG bitmaps
+  --size=<size>       Specify the diameter of the frame
   --config=<file>     Override config file [default: iconframer.yaml]
   -h --help           Show this screen.
   -v --version        Show version.
@@ -23,13 +25,20 @@ import lya
 import polib
 
 from iconframer import load_translations, prepare_template, apply_data, add_icon, NS
-
+from iconframer import generate_png
 
 def iconframer():
 
    args = docopt(__doc__, version='iconframer 1.0')
    conf = lya.AttrDict.from_yaml(args["--config"])
-   
+
+   if args["--png"]:
+      try:
+         import cairo
+         import rsvg
+      except ImportError:
+         sys.exit("Need cairo and rsvg for PNG generation")
+
    if conf.paths.get("translations") and conf.get("languages"):
       i18npth = os.getcwd() + os.sep + conf.paths.translations
       translations = load_translations(i18npth, conf.languages)
@@ -74,7 +83,11 @@ def iconframer():
             apply_data(tmpl, _(entry.msgid))
             tmpl.append(icons[entry.msgid])
             with codecs.open(outdir + os.sep + entry.msgid + "-fi.svg", "w") as out:
-               out.write(etree.tostring(tmpl, encoding="UTF-8"))
+               svgstr = etree.tostring(tmpl, encoding="UTF-8")
+               out.write(svgstr)
+               if args["--png"]:
+                  pngfilepath = outdir + os.sep + entry.msgid + "-fi.png"
+                  generate_png(svgstr, args["<size>"], pngfilepath)
                print "Generated '%s'" % _(entry.msgid)
    
 

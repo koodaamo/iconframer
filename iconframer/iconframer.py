@@ -4,6 +4,12 @@ import polib
 import yaml
 import docopt
 
+try:
+   import cairo
+   import rsvg
+except:
+   pass
+   
 template = "template.svg"
 icondir = "icons"
 outdir = "output"
@@ -54,3 +60,11 @@ def apply_data(template, label_id):
    labelnode = template.find(".//*[@id='label']")
    labelnode.text = label_id.upper()
    return template
+
+def generate_png(svgstr, size, pngfilepath):
+   ""
+   img =  cairo.ImageSurface(cairo.FORMAT_ARGB32, size, size)
+   ctx = cairo.Context(img)
+   handler= rsvg.Handle(None, svgstr)
+   handler.render_cairo(ctx)
+   img.write_to_png(pngfilepath)
