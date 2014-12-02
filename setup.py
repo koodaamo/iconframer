@@ -22,27 +22,27 @@ test_requirements = [
 ]
 
 setup(
-    name='iconic',
+    name='iconframer',
     version='0.1.0',
     description='Generate SVG icons',
     long_description=readme + '\n\n' + history,
     author='Petri Savolainen',
     author_email='petri.savolainen@koodaamo.fi',
-    url='https://github.com/koodaamo/iconic',
+    url='https://github.com/koodaamo/iconframer',
     packages=[
-        'iconic',
+        'iconframer',
     ],
-    package_dir={'iconic':
-                 'iconic'},
+    package_dir={'iconframer':
+                 'iconframer'},
     include_package_data=True,
     install_requires=requirements,
     entry_points="""
     [console_scripts]
-    iconic = iconic.cli:iconic
+    iconframer = iconframer.cli:iconframer
     """,
     license="BSD",
     zip_safe=False,
-    keywords='iconic',
+    keywords='iconframer',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

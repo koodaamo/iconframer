@@ -15,10 +15,10 @@ def load_translations(pth, languages):
    installed = {}
    for l in languages:
       try:
-         installed[l] = gettext.translation('iconic', localedir=pth, languages=[l])
+         installed[l] = gettext.translation('iconframer', localedir=pth, languages=[l])
       except IOError:
          errpth = os.sep.join((pth, l, "LC_MESSAGES" + os.sep))
-         err = "No 'iconic.mo' file found at %s" % errpth
+         err = "No 'iconframer.mo' file found at %s" % errpth
          sys.exit(err)
    return installed
 

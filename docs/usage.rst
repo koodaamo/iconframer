@@ -2,6 +2,6 @@
 Usage
 ========
 
-To use Iconic in a project::
+To use iconframer in a project::
 
-    import iconic
+    import iconframer

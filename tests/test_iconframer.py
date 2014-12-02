@@ -2,18 +2,18 @@
 # -*- coding: utf-8 -*-
 
 """
-test_iconic
+test_iconframer
 ----------------------------------
 
-Tests for `iconic` module.
+Tests for `iconframer` module.
 """
 
 import unittest
 
-from iconic import iconic
+from iconframer import iconframer
 
 
-class TestIconic(unittest.TestCase):
+class Testiconframer(unittest.TestCase):
 
     def setUp(self):
         pass
