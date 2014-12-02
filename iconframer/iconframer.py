@@ -67,4 +67,5 @@ def generate_png(svgstr, size, pngfilepath):
    ctx = cairo.Context(img)
    handler= rsvg.Handle(None, svgstr)
    handler.render_cairo(ctx)
+   ctx.scale(200.0/size, 200.0/size)
    img.write_to_png(pngfilepath)
