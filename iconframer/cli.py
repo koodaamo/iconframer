@@ -24,7 +24,7 @@ from xml.etree import ElementTree as etree
 import lya
 import polib
 
-from iconframer import load_translations, prepare_template, apply_data, add_icon, NS
+from iconframer import load_translations, prepare_template, add_label, add_icon, NS
 from iconframer import generate_png
 
 def iconframer():
@@ -87,7 +87,7 @@ def iconframer():
          for entry in [e for e in pot if e.msgid in icons]:
             tmpl = copy.deepcopy(template)
             if not args["--nolabel"]:
-               apply_data(tmpl, _(entry.msgid))
+               add_label(tmpl, _(entry.msgid))
             tmpl.append(icons[entry.msgid])
             with codecs.open(outdir + os.sep + entry.msgid + "-fi.svg", "w") as out:
                svgstr = etree.tostring(tmpl, encoding="UTF-8")

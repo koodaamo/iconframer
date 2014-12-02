@@ -53,7 +53,7 @@ def add_icon(template, icon, id):
     return icon_elem
     
    
-def apply_data(template, label_id):
+def add_label(template, label_id):
 
    w = float(template.attrib["width"])
    h = float(template.attrib["height"])
@@ -68,7 +68,9 @@ def apply_data(template, label_id):
    labelnode.attrib["font-weight"] = "bold"
    labelnode.attrib["font-famiy"] = "Tahoma"
    labelnode.text = label_id.upper()
+
    return template
+
 
 def generate_png(svgstr, size, pngfilepath):
    ""
