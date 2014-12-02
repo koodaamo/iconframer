@@ -1,0 +1,5 @@
+wheel==0.23.0
+polib
+pyyaml
+docopt
+layered-yaml-attrdict-config
