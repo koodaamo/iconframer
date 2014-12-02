@@ -4,7 +4,7 @@
 iconframer - a command-line tool to generate SVG icons from templates
 
 Usage:
-  iconframer [--config=<file>] [(--png --size=<size>)]
+  iconframer [--config=<file>] [(--png --size=<size>)] [-n --nolabel]
   iconframer -h | --help
   iconframer --version
 
@@ -48,17 +48,23 @@ def iconframer():
    tmpldir = conf.paths.get("templates")
    tmpl = conf.get("template")
    if not (tmpldir and tmpl):
-      sys.exit("need template path and name")
+      sys.exit("Need template path and name")
    
    imgs_fn = conf.get("images")
-   if not os.path.exists(imgs_fn + ".svg"):
-      sys.exit("no source images file found")
-   imgs_svg = etree.parse(os.getcwd() + os.sep + imgs_fn + ".svg")
+   imgs_dir = conf.paths.get("images")
+   if not (imgs_fn and imgs_dir):
+      sys.exit("Need source images path and name")
+
+   imgs_pth = os.sep.join((os.getcwd(), imgs_dir, imgs_fn + ".svg"))
+ 
+   if not os.path.exists(imgs_pth):
+      sys.exit("No source images file found")
+   imgs_svg = etree.parse(imgs_pth)
    imgs = imgs_svg.find("./{%s}g[@id='Images']" % NS)
 
    outdir = os.getcwd() + os.sep + conf.paths.get("output")
    if not conf.paths.get("output") or not os.path.isdir(outdir):
-      sys.exit("invalid output dir given")
+      sys.exit("Invalid output dir given")
 
    tmpl = tmpl if tmpl.endswith(".svg") else tmpl + ".svg"
    with codecs.open(tmpldir + os.sep + tmpl, encoding="utf-8") as svgfile:
@@ -80,7 +86,8 @@ def iconframer():
          gettext.install("iconframer", i18npth, unicode=True)
          for entry in [e for e in pot if e.msgid in icons]:
             tmpl = copy.deepcopy(template)
-            apply_data(tmpl, _(entry.msgid))
+            if not args["--nolabel"]:
+               apply_data(tmpl, _(entry.msgid))
             tmpl.append(icons[entry.msgid])
             with codecs.open(outdir + os.sep + entry.msgid + "-fi.svg", "w") as out:
                svgstr = etree.tostring(tmpl, encoding="UTF-8")

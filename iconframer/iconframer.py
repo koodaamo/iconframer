@@ -10,10 +10,6 @@ try:
 except:
    pass
    
-template = "template.svg"
-icondir = "icons"
-outdir = "output"
-
 NS = "http://www.w3.org/2000/svg"
 
 
@@ -33,6 +29,7 @@ def prepare_template(svgdata):
    "add elements to template"
 
    root = etree.fromstring(svgdata)
+   return root
    w = float(root.attrib["width"])
    h = float(root.attrib["height"])
 
@@ -57,7 +54,19 @@ def add_icon(template, icon, id):
     
    
 def apply_data(template, label_id):
-   labelnode = template.find(".//*[@id='label']")
+
+   w = float(template.attrib["width"])
+   h = float(template.attrib["height"])
+
+   lx = w/2
+   ly = h-8
+   fs = w/8
+
+   labelnode = etree.Element(tag="{%s}text" % NS, id ="label", x=str(lx), y=str(ly), fill="white")
+   labelnode.attrib["text-anchor"] = u"middle"
+   labelnode.attrib["font-size"] = str(fs)
+   labelnode.attrib["font-weight"] = "bold"
+   labelnode.attrib["font-famiy"] = "Tahoma"
    labelnode.text = label_id.upper()
    return template
 
