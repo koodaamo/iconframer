@@ -79,9 +79,9 @@ def iconframer():
       pot = polib.pofile(i18npth + os.sep + "iconframer.pot", encoding="utf-8")
       icons = {}
       for entry in pot:
-         img = imgs.find("./*[@id='%s']" % entry.msgid)
-         if img is not None:
-            icons[entry.msgid] = img
+         icon = imgs.find("./*[@id='%s']" % entry.msgid)
+         if icon is not None:
+            icons[entry.msgid] = icon
          else:
             print "No image found for %s" % entry.msgid
 
@@ -94,12 +94,13 @@ def iconframer():
          _ = translations[lc].ugettext
          for entry in [e for e in pot if e.msgid in icons]:
             tmpl = copy.deepcopy(template)
+            icon = icons[entry.msgid]
             if not args["--nolabel"]:
                color = "black" if args["--inverse"] else "white"
                add_label(tmpl, _(entry.msgid), color)
-            tmpl.append(icons[entry.msgid])
             if args["--inverse"]:
-               inverse_colors(icons[entry.msgid], colors[0], colors[1])
+               inverse_colors(icon, colors[0], colors[1])
+            tmpl.append(icon)
             with codecs.open(outdir + os.sep + entry.msgid + "-fi.svg", "w") as out:
                svgstr = etree.tostring(tmpl, encoding="UTF-8")
                out.write(svgstr)

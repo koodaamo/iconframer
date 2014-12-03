@@ -12,7 +12,13 @@ except:
    
 NS = "http://www.w3.org/2000/svg"
 
-INVERSABLES = ("path", "rect", "text", "span")
+INVERSABLES = ("path", "rect", "text", "tspan")
+
+
+def stripns(nstag):
+   ""
+   return nstag[nstag.index("}")+1:]
+
 
 def load_translations(pth, languages):
    installed = {}
@@ -72,26 +78,38 @@ def find_colors(images):
 
 def inverse_element(elm, col1, col2):
 
-   filled = elm.attrib.get("fill")
-   if filled == col1:
-      elm.attrib["fill"] = col2
-      print " inverted %s fill" % elm.tag[elm.tag.index("}")+1:]
-   elif filled == col2:
-      elm.attrib["fill"] = col1
-      print " inverted %s fill" % elm.tag[elm.tag.index("}")+1:]
+   tag = elm.tag[elm.tag.index("}")+1:]
 
-   stroked = elm.attrib.get("stroke")
-   if stroked == col1:
-      elm.attrib["stroke"] == col2
-      print " inverted %s stroke" % elm.tag[elm.tag.index("}")+1:]
-   elif stroked == col2:
-      elm.attrib["stroke"] == col1
-      print " inverted %s stroke" % elm.tag[elm.tag.index("}")+1:]
-   return elm
+   fill = elm.attrib.get("fill")
+   stroke = elm.attrib.get("stroke")
+
+   if fill == col1:
+      elm.attrib["fill"] = col2
+      print " inverted %s fill from %s to %s" % (tag, fill, col2)
+   elif fill == col2:
+      elm.attrib["fill"] = col1
+      print " inverted %s fill from %s to %s" % (tag, fill, col1)
+   else:
+      if fill:
+         sys.exit("fill %s of %s not either %s or %s" % (fill, tag, col1, col2))
+
+   if stroke == col1:
+      elm.attrib["stroke"] = col2
+      print " inverted %s stroke from %s to %s" % (tag, stroke, col2)
+   elif stroke == col2:
+      elm.attrib["stroke"] = col1
+      print " inverted %s stroke from %s to %s" % (tag, stroke, col1)
+   else:
+      if stroke:
+         sys.exit("stroke %s of %s not either %s or %s" % (stroke, tag, col1, col2))
 
       
 def inverse_colors(image, col1, col2):
    print "Inverting %s:" % image.attrib.get("id")
+
+   if stripns(image.tag) != "g":
+      inverse_element(image, col1, col2)
+
    for tag in INVERSABLES:
       elms = image.findall(".//{%s}%s" % (NS, tag))
       for elm in elms:
