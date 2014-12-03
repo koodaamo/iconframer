@@ -95,7 +95,8 @@ def iconframer():
          for entry in [e for e in pot if e.msgid in icons]:
             tmpl = copy.deepcopy(template)
             if not args["--nolabel"]:
-               add_label(tmpl, _(entry.msgid))
+               color = "black" if args["--inverse"] else "white"
+               add_label(tmpl, _(entry.msgid), color)
             tmpl.append(icons[entry.msgid])
             if args["--inverse"]:
                inverse_colors(icons[entry.msgid], colors[0], colors[1])

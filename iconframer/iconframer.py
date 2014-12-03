@@ -36,7 +36,7 @@ def add_icon(template, icon, id):
     return icon_elem
     
    
-def add_label(template, label_id):
+def add_label(template, label_id, color):
 
    w = float(template.attrib["width"])
    h = float(template.attrib["height"])
@@ -45,7 +45,8 @@ def add_label(template, label_id):
    lx = w/2
    ly = h-(fs/2.0)+fs/5.0
 
-   labelnode = etree.Element(tag="{%s}text" % NS, id ="label", x=str(lx), y=str(ly), fill="white")
+   
+   labelnode = etree.Element(tag="{%s}text" % NS, id ="label", x=str(lx), y=str(ly), fill=color)
    labelnode.attrib["text-anchor"] = u"middle"
    labelnode.attrib["font-size"] = str(fs)
    labelnode.attrib["font-weight"] = "bold"
@@ -70,20 +71,27 @@ def find_colors(images):
 
 
 def inverse_element(elm, col1, col2):
+
    filled = elm.attrib.get("fill")
    if filled == col1:
       elm.attrib["fill"] = col2
+      print " inverted %s fill" % elm.tag[elm.tag.index("}")+1:]
    elif filled == col2:
       elm.attrib["fill"] = col1
+      print " inverted %s fill" % elm.tag[elm.tag.index("}")+1:]
+
    stroked = elm.attrib.get("stroke")
    if stroked == col1:
       elm.attrib["stroke"] == col2
+      print " inverted %s stroke" % elm.tag[elm.tag.index("}")+1:]
    elif stroked == col2:
       elm.attrib["stroke"] == col1
+      print " inverted %s stroke" % elm.tag[elm.tag.index("}")+1:]
    return elm
 
       
 def inverse_colors(image, col1, col2):
+   print "Inverting %s:" % image.attrib.get("id")
    for tag in INVERSABLES:
       elms = image.findall(".//{%s}%s" % (NS, tag))
       for elm in elms:
