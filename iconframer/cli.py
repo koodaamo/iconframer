@@ -4,13 +4,14 @@
 iconframer - a command-line tool to generate SVG icons from templates
 
 Usage:
-  iconframer [--config=<file>] [(--png --size=<size>)] [-n --nolabel]
+  iconframer [--config=<file>] [(--png --size=<size>)] [-n --nolabel] [-i --inverse]
   iconframer -h | --help
   iconframer --version
 
 
 Options:
   -p --png            Generate PNG bitmaps
+  -i --inverse        Inverse the icon colors
   --size=<size>       Specify the diameter of the frame for PNG [default: 24]
   --config=<file>     Override config file [default: iconframer.yaml]
   -h --help           Show this screen.
@@ -25,7 +26,7 @@ import lya
 import polib
 
 from iconframer import load_translations, prepare_template, add_label, add_icon, NS
-from iconframer import generate_png, process_path
+from iconframer import generate_png, process_path, find_colors, inverse_colors
 
 def iconframer():
 
@@ -40,10 +41,12 @@ def iconframer():
          sys.exit("Need cairo and rsvg for PNG generation")
 
    if conf.paths.get("translations") and conf.get("languages"):
-      i18npth = os.getcwd() + os.sep + conf.paths.translations
+      i18npth = conf.paths.translations
+      if i18npth[0] not in ('.','/'):
+         i18npth = os.getcwd() + os.sep + i18npth
       translations = load_translations(i18npth, conf.languages)
    else:
-      translations = None
+      translations = {}
 
    tmpldir = conf.paths.get("templates")
    tmpl = conf.get("template")
@@ -74,19 +77,28 @@ def iconframer():
       pot = polib.pofile(i18npth + os.sep + "iconframer.pot", encoding="utf-8")
       icons = {}
       for entry in pot:
-         img = imgs.find("./*[@id='%s']" % entry.msgid)
-         if img is not None:
-            icons[entry.msgid] = img
+         icon = imgs.find("./*[@id='%s']" % entry.msgid)
+         if icon is not None:
+            icons[entry.msgid] = icon
          else:
             print "No image found for %s" % entry.msgid
 
+      colors = find_colors(icons.values())
+      if len(colors) > 2:
+         sys.exit("more than 2 colors found in images!")
+      print "Colors found: %s\n" % colors
+
       for lc in translations:
-         gettext.install("iconframer", i18npth, unicode=True)
+         _ = translations[lc].ugettext
          for entry in [e for e in pot if e.msgid in icons]:
             tmpl = copy.deepcopy(template)
+            icon = icons[entry.msgid]
             if not args["--nolabel"]:
-               add_label(tmpl, _(entry.msgid))
-            tmpl.append(icons[entry.msgid])
+               color = "black" if args["--inverse"] else "white"
+               add_label(tmpl, _(entry.msgid), color)
+            if args["--inverse"]:
+               inverse_colors(icon, colors[0], colors[1])
+            tmpl.append(icon)
             with codecs.open(outdir + os.sep + entry.msgid + "-fi.svg", "w") as out:
                svgstr = etree.tostring(tmpl, encoding="UTF-8")
                out.write(svgstr)

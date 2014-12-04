@@ -12,6 +12,13 @@ except:
    
 NS = "http://www.w3.org/2000/svg"
 
+INVERSABLES = ("path", "rect", "text", "tspan")
+
+
+def stripns(nstag):
+   ""
+   return nstag[nstag.index("}")+1:]
+
 
 def process_path(pth):
 
@@ -41,50 +48,87 @@ def load_translations(pth, languages):
 
    
 def prepare_template(svgdata):
-   "add elements to template"
-
+   "load SVG"
    root = etree.fromstring(svgdata)
    return root
-   w = float(root.attrib["width"])
-   h = float(root.attrib["height"])
-
-   lx = w/2
-   ly = h-8
-   fs = w/8
-
-   labelnode = etree.Element(tag="{%s}text" % NS, id ="label", x=str(lx), y=str(ly), fill="white")
-   labelnode.attrib["text-anchor"] = u"middle"
-   labelnode.attrib["font-size"] = str(fs)
-   labelnode.attrib["font-weight"] = "bold"
-   labelnode.attrib["font-famiy"] = "Tahoma"
-   
-   root.append(labelnode)
-   
-   return root
-
 
 def add_icon(template, icon, id):
     icon_elem = icon.find(".//g[@id='%s']" % id)   
     return icon_elem
     
    
-def add_label(template, label_id):
+def add_label(template, label_id, color):
 
    w = float(template.attrib["width"])
    h = float(template.attrib["height"])
 
-   lx = w/2
-   ly = h-8
    fs = w/8
+   lx = w/2
+   ly = h-(fs/2.0)+fs/5.0
 
-   labelnode = etree.Element(tag="{%s}text" % NS, id ="label", x=str(lx), y=str(ly), fill="white")
+   
+   labelnode = etree.Element(tag="{%s}text" % NS, id ="label", x=str(lx), y=str(ly), fill=color)
    labelnode.attrib["text-anchor"] = u"middle"
    labelnode.attrib["font-size"] = str(fs)
    labelnode.attrib["font-weight"] = "bold"
-   labelnode.attrib["font-famiy"] = "Tahoma"
+   labelnode.attrib["font-family"] = "sans-serif"
    labelnode.text = label_id.upper()
-
+   template.append(labelnode)
    return template
+
+
+def find_colors(images):
+   ""
+   elms = []
+   colors = []
+   for image in images:
+      for tag in INVERSABLES:
+         elms.extend(image.findall(".//{%s}%s" % (NS, tag)))
+
+   fills = [elm.attrib["fill"].strip().upper() for elm in elms if elm.attrib.get("fill")]
+   strokes = [elm.attrib["stroke"].strip().upper() for elm in elms if elm.attrib.get("stroke")]
+   colors = set(fills).union(strokes)
+   return list(colors)
+
+
+def inverse_element(elm, col1, col2):
+
+   tag = elm.tag[elm.tag.index("}")+1:]
+
+   fill = elm.attrib.get("fill")
+   stroke = elm.attrib.get("stroke")
+
+   if fill == col1:
+      elm.attrib["fill"] = col2
+      print " inverted %s fill from %s to %s" % (tag, fill, col2)
+   elif fill == col2:
+      elm.attrib["fill"] = col1
+      print " inverted %s fill from %s to %s" % (tag, fill, col1)
+   else:
+      if fill:
+         sys.exit("fill %s of %s not either %s or %s" % (fill, tag, col1, col2))
+
+   if stroke == col1:
+      elm.attrib["stroke"] = col2
+      print " inverted %s stroke from %s to %s" % (tag, stroke, col2)
+   elif stroke == col2:
+      elm.attrib["stroke"] = col1
+      print " inverted %s stroke from %s to %s" % (tag, stroke, col1)
+   else:
+      if stroke:
+         sys.exit("stroke %s of %s not either %s or %s" % (stroke, tag, col1, col2))
+
+      
+def inverse_colors(image, col1, col2):
+   print "Inverting %s:" % image.attrib.get("id")
+
+   if stripns(image.tag) != "g":
+      inverse_element(image, col1, col2)
+
+   for tag in INVERSABLES:
+      elms = image.findall(".//{%s}%s" % (NS, tag))
+      for elm in elms:
+         inverse_element(elm, col1, col2)
 
 
 def generate_png(svgstr, size, pngfilepath):
