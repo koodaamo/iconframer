@@ -16,12 +16,16 @@ INVERSABLES = ("path", "rect", "text", "tspan")
 
 
 def stripns(nstag):
-   ""
+   "strip ElementTree-style namespace from tag"
    return nstag[nstag.index("}")+1:]
 
 
-def process_path(pth):
-
+def process_path(label, pth):
+   "check and expand paths"
+   
+   if pth is None:
+      sys.exit("no %s path given" % label)
+      
    if pth.startswith("/"):
       pass
    elif pth[0] in (".", "~"):
@@ -30,7 +34,7 @@ def process_path(pth):
       pth = os.getcwd() + os.sep + pth
    
    if not os.path.exists(pth):
-      sys.exit("path %s does not exist" % pth)
+      sys.exit("%s path %s does not exist" % (label, pth))
 
    return pth
    
@@ -131,9 +135,37 @@ def inverse_colors(image, col1, col2):
          inverse_element(elm, col1, col2)
 
 
+def convert_svg(svgstr, size, filepath, target):
+   "convert to PDF or PNG"
+   
+   # PREPARE CONVERSION PER TYPE
+   if target == "PDF":
+      img = cairo.PDFSurface(filepath, size, size)
+   
+   elif target == "PNG":
+      img = cairo.ImageSurface(cairo.FORMAT_ARGB32, size, size)
+  
+   else:
+      system.exit("unknown file type conversion")
+
+   # PROCESS
+   ctx = cairo.Context(img)
+   handler= rsvg.Handle(None, svgstr)
+   iw,ih, fw,fh =  handler.get_dimension_data()
+   ctx.translate(0,0)
+   ctx.scale(size/fw, size/fh) # assumes bigger source SVG template
+   handler.render_cairo(ctx)
+
+   # FINALIZE PER TYPE
+   if target == "PNG":
+      img.write_to_png(filepath)
+
+
+"""      
+       
 def generate_png(svgstr, size, pngfilepath):
    ""
-   img =  cairo.ImageSurface(cairo.FORMAT_ARGB32, size, size)
+   img = cairo.ImageSurface(cairo.FORMAT_ARGB32, size, size)
    ctx = cairo.Context(img)
    handler= rsvg.Handle(None, svgstr)
    iw,ih, fw,fh =  handler.get_dimension_data()
@@ -141,3 +173,15 @@ def generate_png(svgstr, size, pngfilepath):
    ctx.scale(size/fw, size/fh) # assumes bigger source SVG template
    handler.render_cairo(ctx)
    img.write_to_png(pngfilepath)
+
+
+def generate_pdf(svgstr, size, pdffilepath):
+   img = cairo.PDFSurface(pdffilepath, size, size)
+   ctx = cairo.Context(img)
+   handler= rsvg.Handle(None, svgstr)
+   iw,ih, fw,fh =  handler.get_dimension_data()
+   ctx.translate(0,0)
+   ctx.scale(size/fw, size/fh) # assumes bigger source SVG template
+   handler.render_cairo(ctx)
+   #img.write_to_png(pdffilepath)
+"""
