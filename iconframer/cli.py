@@ -25,7 +25,7 @@ import lya
 import polib
 
 from iconframer import load_translations, prepare_template, add_label, add_icon, NS
-from iconframer import generate_png
+from iconframer import generate_png, process_path
 
 def iconframer():
 
@@ -62,9 +62,7 @@ def iconframer():
    imgs_svg = etree.parse(imgs_pth)
    imgs = imgs_svg.find("./{%s}g[@id='Images']" % NS)
 
-   outdir = os.getcwd() + os.sep + conf.paths.get("output")
-   if not conf.paths.get("output") or not os.path.isdir(outdir):
-      sys.exit("Invalid output dir given")
+   outdir = process_path(conf.paths.get("output"))
 
    tmpl = tmpl if tmpl.endswith(".svg") else tmpl + ".svg"
    with codecs.open(tmpldir + os.sep + tmpl, encoding="utf-8") as svgfile:

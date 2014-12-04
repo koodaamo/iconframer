@@ -1,4 +1,4 @@
-import os, gettext, sys
+import os, gettext, sys, os.path
 from xml.etree import ElementTree as etree
 import polib
 import yaml
@@ -13,6 +13,21 @@ except:
 NS = "http://www.w3.org/2000/svg"
 
 
+def process_path(pth):
+
+   if pth.startswith("/"):
+      pass
+   elif pth[0] in (".", "~"):
+      pth = os.path.realpath(pth)
+   else:
+      pth = os.getcwd() + os.sep + pth
+   
+   if not os.path.exists(pth):
+      sys.exit("path %s does not exist" % pth)
+
+   return pth
+   
+         
 def load_translations(pth, languages):
    installed = {}
    for l in languages:
