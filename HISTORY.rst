@@ -3,7 +3,13 @@
 History
 -------
 
-0.1.0 (2014-01-11)
----------------------
+0.3.0 (2016-01-18)
+-------------------
+
+* Improved docs, minor cleanup
+* Add example config file
+
+0.2.0 (2016-01-18)
+-------------------
 
 * First release on PyPI.

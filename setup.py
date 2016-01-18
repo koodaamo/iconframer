@@ -23,8 +23,8 @@ test_requirements = [
 
 setup(
     name='iconframer',
-    version='0.2',
-    description='Generate SVG icons',
+    version='0.3',
+    description='Generate framed and labelled SVG icons',
     long_description=readme + '\n\n' + history,
     author='Petri Savolainen',
     author_email='petri.savolainen@koodaamo.fi',
@@ -44,9 +44,9 @@ setup(
     zip_safe=False,
     keywords='iconframer',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',

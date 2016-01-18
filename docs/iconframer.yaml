@@ -1,0 +1,22 @@
+# where stuff is found from and generated into
+paths:
+
+  # where the generated icons will be placed
+  output: output
+  
+  # the frame template directory
+  templates: templates
+
+  # the source (SVG) image directory
+  images: images
+
+#  translations: i18n
+
+# name of source image file to use, without the .svg extension
+images: iconimages
+
+# likewise, name of the frame template to use
+template: template
+
+languages:
+  - fi
