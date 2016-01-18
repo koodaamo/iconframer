@@ -23,7 +23,7 @@ test_requirements = [
 
 setup(
     name='iconframer',
-    version='0.3',
+    version='0.3.1',
     description='Generate framed and labelled SVG icons',
     long_description=readme + '\n\n' + history,
     author='Petri Savolainen',
